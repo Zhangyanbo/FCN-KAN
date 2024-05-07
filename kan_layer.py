@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 
 def phi(x, w1, w2, b1, b2, n_sin):
-    omega = (2 ** torch.arange(1, n_sin+1)).float().reshape(-1, 1)
+    omega = (2 ** torch.arange(0, n_sin)).float().reshape(-1, 1)
     omega_x = F.linear(x, omega, bias=None)
     x = torch.cat([x, torch.sin(omega_x), torch.cos(omega_x)], dim=-1)
     
