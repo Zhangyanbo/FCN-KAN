@@ -6,7 +6,7 @@ import torch.nn.functional as F
 def phi(x, w1, w2, b1, b2, n_sin):
     omega = (2 ** torch.arange(1, n_sin+1)).float().reshape(-1, 1)
     omega_x = F.linear(x, omega, bias=None)
-    x = torch.cat([torch.sin(omega_x), torch.cos(omega_x)], dim=-1)
+    x = torch.cat([x, torch.sin(omega_x), torch.cos(omega_x)], dim=-1)
     
     x = F.linear(x, w1, bias=b1)
     x = F.silu(x)
@@ -17,7 +17,7 @@ def phi(x, w1, w2, b1, b2, n_sin):
 class KANLayer(nn.Module):
     def __init__(self, dim_in, dim_out, fcn_hidden=32, fcn_n_sin=3):
         super().__init__()
-        self.W1 = nn.Parameter(torch.randn(dim_in, dim_out, fcn_hidden, fcn_n_sin*2))
+        self.W1 = nn.Parameter(torch.randn(dim_in, dim_out, fcn_hidden, 1+fcn_n_sin*2))
         self.W2 = nn.Parameter(torch.randn(dim_in, dim_out, 1, fcn_hidden))
         self.B1 = nn.Parameter(torch.randn(dim_in, dim_out, fcn_hidden))
         self.B2 = nn.Parameter(torch.randn(dim_in, dim_out, 1))
