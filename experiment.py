@@ -44,7 +44,7 @@ def train(model, n_epoch, lr=1e-2, batch_size=32, weight_decay=1e-3, L1=1e-5, et
 
 if __name__ == '__main__':
 
-    dims = [2, 5, 1]
+    dims = [2, 1, 1]
     model = nn.Sequential(
         KANLayer(dims[0], dims[1]),
         KANLayer(dims[1], dims[2])
@@ -80,7 +80,7 @@ if __name__ == '__main__':
             plt.title(f"$f_{{{i}, {j}}}$")
 
     plt.tight_layout()
-    plt.savefig('layer_0.png')
+    plt.savefig('./images/layer_0_inter.png')
     plt.close()
 
     layer = 1
@@ -91,7 +91,7 @@ if __name__ == '__main__':
             plt.subplot(dims[2], dims[1], i * dims[2] + j + 1)
             f = model[layer].take_function(i, j)
 
-            x = torch.linspace(-1, 1, 100)
+            x = torch.linspace(x_ranges[i][0] - 0.05, x_ranges[i][1] + 0.05, 100)
             y = f(x.unsqueeze(-1)).detach().squeeze()
 
             vmin, vmax = y.min().item() - 0.1, y.max().item() + 0.1
@@ -102,5 +102,5 @@ if __name__ == '__main__':
             plt.title(f"$f_{{{i}, {j}}}$")
 
     plt.tight_layout()
-    plt.savefig('layer_1.png')
+    plt.savefig('./images/layer_1_inter.png')
     plt.close()

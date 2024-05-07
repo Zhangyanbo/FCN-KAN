@@ -1,6 +1,14 @@
 # FCN-KAN
 Kolmogorov–Arnold Networks with modified activation (using FCN + positional encoding to represent the activation). The code utilizes `torch.vmap` to accelerate and simplify the process.
 
+## Experiment
+
+Running the following code for quick experiment:
+
+```bash
+python experiment.py
+```
+
 ## Example usage
 
 ```python
@@ -30,12 +38,38 @@ def target_fn(input):
     return torch.exp(torch.sin(torch.pi * x) + y**2)
 ```
 
+The first experiment set the network as:
+
+```python
+dims = [2, 5, 1]
+model = nn.Sequential(
+    KANLayer(dims[0], dims[1]),
+    KANLayer(dims[1], dims[2])
+)
+```
+
 After training on this, the activation function did learn the sine and square functions:
 
-![](layer_0.png)
+![](./images/layer_0.png)
 
 The exponential function is also been learned for the second layer:
 
-![](layer_1.png)
+![](./images/layer_1.png)
+
+For better interpretability, we can set the network as:
+
+```python
+dims = [2, 1, 1]
+model = nn.Sequential(
+    KANLayer(dims[0], dims[1]),
+    KANLayer(dims[1], dims[2])
+)
 ```
-```
+
+Both the first layer and the second layer learning exactly the target function:
+
+![](./images/layer_0_inter.png)
+
+Second layer learning the exponential function:
+
+![](./images/layer_1_inter.png)
