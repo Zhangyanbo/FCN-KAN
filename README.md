@@ -34,7 +34,7 @@ After training on this, the activation function did learn the sine and square fu
 
 ![](layer_0.png)
 
-However, the exponential function has not been learned for the second layer:
+The exponential function is also been learned for the second layer:
 
 ![](layer_1.png)
 ```
