@@ -1,18 +1,16 @@
 # FCN-KAN
 Kolmogorov–Arnold Networks with modified activation (using FCN + positional encoding to represent the activation). The code utilizes `torch.vmap` to accelerate and simplify the process.
 
-## Experiment
+## Installation
 
-Running the following code for quick experiment:
-
-```bash
-python experiment.py
+```
+pip install FCN_KAN
 ```
 
 ## Example usage
 
 ```python
-from kan_layer import KANLayer
+from FCN_KAN import KANLayer
 
 model = nn.Sequential(
         KANLayer(2, 5),
@@ -22,6 +20,14 @@ model = nn.Sequential(
 x = torch.randn(16, 2)
 y = model(x)
 # y.shape = (16, 1)
+```
+
+## Experiment
+
+Running the following code for quick experiment:
+
+```bash
+python experiment.py
 ```
 
 ## Visualization
