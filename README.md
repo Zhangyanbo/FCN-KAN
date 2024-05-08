@@ -91,7 +91,7 @@ y = model(x)
 # y.shape = (16, 1)
 ```
 
-The result shows similar performance. However, this version is harder to train. I guess it is because each parameter only affect the behavior locally, making it harder to cross local minima, or zero-gradient points.
+The result shows similar performance. However, this version is harder to train. I guess it is because each parameter only affect the behavior locally, making it harder to cross local minima, or zero-gradient points. Adding `smooth_penalty` may help.
 
 ![](./images/layer_0_interpolation.png)
 

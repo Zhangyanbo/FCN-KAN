@@ -4,7 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 import matplotlib.pyplot as plt
-from kan_layer import KANLayer, KANInterpoLayer
+from kan_layer import KANLayer, KANInterpoLayer, smooth_penalty
 from tqdm import tqdm
 
 
@@ -17,7 +17,7 @@ def target_fn(input):
     return torch.exp(torch.sin(torch.pi * x) + y**2)
 
 
-def train(model, n_epoch, lr=1e-2, batch_size=32, weight_decay=1e-3, L1=1e-5, eta_min=1e-5):
+def train(model, n_epoch, lr=1e-2, batch_size=32, weight_decay=1e-3, L1=1e-5, eta_min=1e-5, smooth=0.1):
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, n_epoch, eta_min=eta_min)
     lf = nn.MSELoss()
@@ -33,7 +33,7 @@ def train(model, n_epoch, lr=1e-2, batch_size=32, weight_decay=1e-3, L1=1e-5, et
         L1_loss = 0
         for param in model.parameters():
             L1_loss += torch.norm(param, 1)
-        train_loss = loss + L1 * L1_loss
+        train_loss = loss + L1 * L1_loss + smooth_penalty(model) * smooth
         train_loss.backward()
         loss_count.append(loss.item())
         optimizer.step()
@@ -46,11 +46,11 @@ if __name__ == '__main__':
 
     dims = [2, 1, 1]
     model = nn.Sequential(
-        KANInterpoLayer(dims[0], dims[1], num_x=64),
-        KANInterpoLayer(dims[1], dims[2], num_x=64)
+        KANInterpoLayer(dims[0], dims[1], num_x=256, x_min=-3, x_max=3),
+        KANInterpoLayer(dims[1], dims[2], num_x=256)
     )
 
-    loss_count = train(model, 20000, lr=1e-2, weight_decay=1e-5, L1=0)
+    loss_count = train(model, 20000, lr=1e-1, weight_decay=1e-5, L1=0, smooth=0.01)
 
     plt.plot(loss_count)
     plt.semilogy()
@@ -91,14 +91,14 @@ if __name__ == '__main__':
             plt.subplot(dims[2], dims[1], i * dims[2] + j + 1)
             f = model[layer].take_function(i, j)
 
-            x = torch.linspace(x_ranges[i][0] - 0.05, x_ranges[i][1] + 0.05, 100)
+            x = torch.linspace(x_ranges[i][0] - 0.005, x_ranges[i][1] + 0.005, 100)
             y = f(x.unsqueeze(-1)).detach().squeeze()
 
             vmin, vmax = y.min().item() - 0.1, y.max().item() + 0.1
 
             plt.plot(x, y)
             plt.ylim(vmin, vmax)
-            plt.xlim(x_ranges[i][0] - 0.05, x_ranges[i][1] + 0.05)
+            plt.xlim(x_ranges[i][0] - 0.005, x_ranges[i][1] + 0.005)
             plt.title(f"$f_{{{i}, {j}}}$")
 
     plt.tight_layout()

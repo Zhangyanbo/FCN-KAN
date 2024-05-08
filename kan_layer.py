@@ -208,3 +208,20 @@ class KANInterpoLayer(nn.Module):
         def activation(x):
             return linear_interpolation(x, self.X, self.Y[i, j])
         return activation
+
+
+def smooth_penalty(model):
+    p = 0
+    if isinstance(model, KANInterpoLayer):
+        dx = model.X[1] - model.X[0]
+        grad = model.Y[:, :, 1:] - model.Y[:, :, :-1]
+        # grad = grad[:, :, 1:] - grad[:, :, :-1]
+        return torch.norm(grad, 2) / dx
+
+    for layer in model:
+        if isinstance(layer, KANInterpoLayer):
+            dx = layer.X[1] - layer.X[0]
+            grad = layer.Y[:, :, 1:] - layer.Y[:, :, :-1]
+            # grad = grad[:, :, 1:] - grad[:, :, :-1]
+            p += torch.norm(grad, 2) / dx
+    return p
