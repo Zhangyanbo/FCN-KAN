@@ -94,3 +94,5 @@ The result shows similar performance. However, this version is harder to train. 
 ![](./images/layer_0_interpolation.png)
 
 ![](./images/layer_1_interpolation.png)
+
+![](./images/loss_interpolation.png)
