@@ -28,6 +28,8 @@ y = model(x)
 
 I experimented with a simple objective function:
 
+$$f(x,y)=\exp(\sin(\pi x) + y^2)$$
+
 ```python
 def target_fn(input):
     # f(x,y)=exp(sin(pi * x) + y^2)
@@ -48,7 +50,7 @@ model = nn.Sequential(
 )
 ```
 
-After training on this, the activation function did learn the sine and square functions:
+After training on this, the activation function did learn the $\sin(\pi x)$ and $x^2$ functions:
 
 ![](./images/layer_0.png)
 
