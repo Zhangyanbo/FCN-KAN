@@ -4,7 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 import matplotlib.pyplot as plt
-from kan_layer import KANLayer
+from kan_layer import KANLayer, KANInterpoLayer
 from tqdm import tqdm
 
 
@@ -14,8 +14,7 @@ def target_fn(input):
         x, y = input
     else:
         x, y = input[:, 0], input[:, 1]
-    # return torch.exp(torch.sin(torch.pi * x) + y**2)
-    return x * y
+    return torch.exp(torch.sin(torch.pi * x) + y**2)
 
 
 def train(model, n_epoch, lr=1e-2, batch_size=32, weight_decay=1e-3, L1=1e-5, eta_min=1e-5):
@@ -27,7 +26,7 @@ def train(model, n_epoch, lr=1e-2, batch_size=32, weight_decay=1e-3, L1=1e-5, et
 
     for i in tqdm(range(n_epoch)):
         optimizer.zero_grad()
-        x = torch.rand(batch_size, 2) #* 2 - 1
+        x = torch.rand(batch_size, 2) * 2 - 1
         y = target_fn(x)
         y_pred = model(x)
         loss = lf(y_pred.reshape(-1), y)
@@ -47,11 +46,11 @@ if __name__ == '__main__':
 
     dims = [2, 1, 1]
     model = nn.Sequential(
-        KANLayer(dims[0], dims[1]),
-        KANLayer(dims[1], dims[2])
+        KANInterpoLayer(dims[0], dims[1], num_x=64),
+        KANInterpoLayer(dims[1], dims[2], num_x=64)
     )
 
-    loss_count = train(model, 10000, lr=1e-3, weight_decay=1e-4, L1=0)
+    loss_count = train(model, 20000, lr=1e-2, weight_decay=1e-5, L1=0)
 
     plt.plot(loss_count)
     plt.semilogy()
@@ -70,7 +69,7 @@ if __name__ == '__main__':
             plt.subplot(dims[0], dims[1], i * dims[1] + j + 1)
             f = model[layer].take_function(i, j)
 
-            x = torch.linspace(0, 1, 100)
+            x = torch.linspace(-1, 1, 100)
             y = f(x.unsqueeze(-1)).detach().squeeze()
 
             vmin, vmax = y.min().item(), y.max().item()
@@ -81,7 +80,7 @@ if __name__ == '__main__':
             plt.title(f"$f_{{{i}, {j}}}$")
 
     plt.tight_layout()
-    plt.savefig('./temp/layer_0_inter.png')
+    plt.savefig('./temp/layer_0_interpolation.png')
     plt.close()
 
     layer = 1
@@ -103,5 +102,5 @@ if __name__ == '__main__':
             plt.title(f"$f_{{{i}, {j}}}$")
 
     plt.tight_layout()
-    plt.savefig('./temp/layer_1_inter.png')
+    plt.savefig('./temp/layer_1_interpolation.png')
     plt.close()

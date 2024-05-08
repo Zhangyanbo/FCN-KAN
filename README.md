@@ -73,3 +73,24 @@ Both the first layer and the second layer learning exactly the target function:
 Second layer learning the exponential function:
 
 ![](./images/layer_1_inter.png)
+
+# Linear Interpolation Version
+
+```python
+from kan_layer import KANInterpoLayer
+
+model = nn.Sequential(
+        KANInterpoLayer(2, 5),
+        KANInterpoLayer(5, 1)
+    )
+
+x = torch.randn(16, 2)
+y = model(x)
+# y.shape = (16, 1)
+```
+
+The result shows similar performance. However, this version is harder to train, since each parameter only affect the behavior locally.
+
+![](./images/layer_0_interpolation.png)
+
+![](./images/layer_1_interpolation.png)
